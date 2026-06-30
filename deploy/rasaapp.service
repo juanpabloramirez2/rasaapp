@@ -1,0 +1,45 @@
+# =================================================================
+# rasaapp.service — Servicio systemd para Rasa Deportes
+# Instalación: sudo cp deploy/rasaapp.service /etc/systemd/system/
+#              sudo systemctl daemon-reload
+#              sudo systemctl enable --now rasaapp
+#
+# Comandos útiles:
+#   systemctl status rasaapp
+#   systemctl start|stop|restart rasaapp
+#   journalctl -u rasaapp -f
+# =================================================================
+
+[Unit]
+Description=Rasa Deportes — Docker Compose Stack
+Documentation=https://rasadeportes.com
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/rasaapp
+EnvironmentFile=/opt/rasaapp/.env
+
+# Levanta todo el stack
+ExecStart=/usr/bin/docker compose up -d
+
+# Apaga todo el stack limpiamente
+ExecStop=/usr/bin/docker compose down
+
+# Permite reload sin bajar (útil para cambios de config sin rebuild)
+ExecReload=/usr/bin/docker compose up -d
+
+TimeoutStartSec=300
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=10
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rasaapp
+
+[Install]
+WantedBy=multi-user.target

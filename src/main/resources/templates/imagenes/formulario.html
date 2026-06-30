@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="~{layout/base :: head}">
+    <title>Gestión de Imagen</title>
+</head>
+
+<body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
+
+    <div class="loader-bg">
+        <div class="loader-track"><div class="loader-fill"></div></div>
+    </div>
+
+    <nav th:replace="~{layout/base :: sidebar}"></nav>
+    <header th:replace="~{layout/base :: header}"></header>
+
+    <div class="pc-container">
+        <div class="pc-content">
+
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">
+                                    <span th:text="${imagen.id} != null ? 'Editar Imagen' : 'Subir Nueva Imagen'"></span>
+                                </h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/dashboard/productos">Home</a></li>
+                                <li class="breadcrumb-item"><a th:href="@{/dashboard/imagenes/producto/{id}(id=${productoId})}">Galería</a></li>
+                                <li class="breadcrumb-item" aria-current="page" th:text="${imagen.id} != null ? 'Editar' : 'Nueva'"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 th:text="${imagen.id} != null ? 'Actualizar Detalles' : 'Nueva Imagen'"></h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/dashboard/imagenes/guardar/{pid}(pid=${productoId})}"
+                                  method="post"
+                                  enctype="multipart/form-data">
+                                
+                                <input type="hidden" name="id" th:value="${imagen.id}">
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Archivo de Imagen</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ti ti-photo"></i></span>
+                                        <input type="file"
+                                               name="archivo"
+                                               class="form-control"
+                                               accept="image/*"
+                                               th:required="${imagen.id == null}">
+                                    </div>
+                                    <small class="text-muted" th:if="${imagen.id != null}">
+                                        Deja este campo vacío si no deseas cambiar la imagen actual.
+                                    </small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check form-switch custom-switch-v1">
+                                        <input type="checkbox"
+                                               class="form-check-input input-primary"
+                                               name="esPrincipal"
+                                               id="esPrincipal"
+                                               th:checked="${imagen.esPrincipal}">
+                                        <label class="form-check-label fw-semibold" for="esPrincipal">
+                                            ¿Establecer como imagen principal?
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 text-center" th:if="${imagen.url != null}">
+                                    <label class="form-label d-block text-start fw-semibold">Imagen Actual</label>
+                                    <img th:src="${imagen.url}" class="img-fluid rounded shadow-sm border" style="max-height: 200px;" alt="Preview">
+                                </div>
+
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary d-flex align-items-center">
+                                        <i class="ti ti-device-floppy me-1"></i> Guardar Cambios
+                                    </button>
+                                    <a th:href="@{/dashboard/imagenes/producto/{id}(id=${productoId})}" 
+                                       class="btn btn-light-secondary d-flex align-items-center">
+                                        <i class="ti ti-arrow-left me-1"></i> Cancelar
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/base :: footer}"></footer>
+
+    <script src="/mantis/assets/js/plugins/popper.min.js"></script>
+    <script src="/mantis/assets/js/plugins/simplebar.min.js"></script>
+    <script src="/mantis/assets/js/plugins/bootstrap.min.js"></script>
+    <script src="/mantis/assets/js/fonts/custom-font.js"></script>
+    <script src="/mantis/assets/js/pcoded.js"></script>
+    <script src="/mantis/assets/js/plugins/feather.min.js"></script>
+    <script>layout_change('light'); change_box_container('false'); layout_rtl_change('false'); preset_change("preset-1"); font_change("Public-Sans");</script>
+
+</body>
+</html>

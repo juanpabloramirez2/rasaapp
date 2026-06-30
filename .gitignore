@@ -1,0 +1,26 @@
+# Maven
+target/
+*.class
+
+# Spring Boot
+HELP.md
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Credenciales — NUNCA subir
+.env
+!.env.example
+
+# Uploads y logs locales
+uploads/
+logs/
+backups/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+**/.DS_Store

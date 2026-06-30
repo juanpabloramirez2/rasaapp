@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasa Deportes | Catálogo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/public-base.css">
+    <link rel="stylesheet" href="/css/catalogo.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="rasa-nav">
+    <a class="rasa-brand" href="/catalogo">RASA <span>DEPORTES</span></a>
+    <button class="nav-search-btn" id="openSearch" aria-label="Buscar productos">
+        <i class="bi bi-search"></i>
+        <span>Buscar</span>
+    </button>
+</nav>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Búsqueda de productos">
+    <button class="search-overlay__close" id="closeSearch" aria-label="Cerrar búsqueda">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <input class="search-overlay__input"
+           type="search"
+           id="searchInput"
+           placeholder="Buscar productos..."
+           autocomplete="off"
+           spellcheck="false"
+           enterkeyhint="search">
+    <div class="search-overlay__actions">
+        <button class="search-overlay__submit" id="submitSearch" type="button">
+            <i class="bi bi-arrow-return-left"></i>
+            Ver resultados
+        </button>
+    </div>
+    <span class="search-overlay__hint">Enter o clic en "Ver resultados" para confirmar &nbsp;·&nbsp; Esc para cancelar</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar-wrapper">
+    <div class="filter-bar">
+        <a href="/catalogo" class="filter-pill"
+           th:classappend="${categoriaSeleccionada == null} ? ' active' : ''">Todos</a>
+        <div class="filter-sep"></div>
+        <a th:each="cat : ${categorias}"
+           th:href="@{/catalogo(categoria=${cat.id})}"
+           class="filter-pill"
+           th:classappend="${categoriaSeleccionada == cat.id} ? ' active' : ''"
+           th:text="${cat.nombre}"></a>
+    </div>
+</div>
+
+<!-- HERO -->
+<header class="catalog-hero">
+    <div class="catalog-hero__label">Catálogo deportivo</div>
+    <h1 class="catalog-hero__title">Equipamiento<br>Deportivo</h1>
+    <div class="catalog-hero__meta-row">
+        <p class="catalog-hero__count">
+            <strong id="countVisible" th:text="${#lists.size(productos)}"></strong>
+            <span id="countSuffix"> productos disponibles</span>
+        </p>
+        <!-- Indicador de búsqueda activa -->
+        <div id="activeSearchBadge" class="search-active-badge d-none">
+            Buscando: &ldquo;<strong id="activeSearchTerm"></strong>&rdquo;
+            <button type="button" class="search-clear-btn" id="clearSearchBtn" aria-label="Limpiar búsqueda">
+                <i class="bi bi-x-lg"></i> Limpiar
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- GRID -->
+<main class="catalog-main">
+    <div class="products-grid" id="productsGrid">
+
+        <a th:each="p : ${productos}"
+           th:href="@{/catalogo/producto/{id}(id=${p.id})}"
+           class="product-card"
+           th:attr="data-name=${p.nombre}, data-cat=${p.categoria?.nombre}">
+
+            <div class="product-card__img-wrap">
+                <img th:if="${p.imagenPrincipal != null}"
+                     th:src="${p.imagenPrincipal.url}"
+                     class="product-card__img"
+                     th:alt="${p.nombre}"
+                     loading="lazy">
+                <div th:unless="${p.imagenPrincipal != null}" class="product-card__no-img">
+                    <i class="bi bi-image"></i>
+                </div>
+                <div class="product-card__overlay">Ver producto &rarr;</div>
+            </div>
+
+            <div class="product-card__info">
+                <span class="product-card__cat" th:text="${p.categoria?.nombre}"></span>
+                <span class="product-card__name" th:text="${p.nombre}"></span>
+                <span class="product-card__price"
+                      th:text="'$' + ${#numbers.formatDecimal(p.precio, 0, 'COMMA', 0, 'POINT')}"></span>
+            </div>
+        </a>
+
+        <div class="empty-state d-none" id="emptyState">
+            <i class="bi bi-search"></i>
+            <p>Sin resultados. <button type="button" class="search-clear-btn" onclick="clearSearch()" style="display:inline;background:none;border:none;color:var(--accent);cursor:pointer;font-size:inherit;text-decoration:underline;">Limpiar búsqueda</button></p>
+        </div>
+
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="rasa-footer">
+    <strong>Rasa Deportes</strong> &nbsp;&mdash;&nbsp; Equipamiento deportivo de calidad
+</footer>
+
+<script>
+    const openBtn    = document.getElementById('openSearch');
+    const closeBtn   = document.getElementById('closeSearch');
+    const submitBtn  = document.getElementById('submitSearch');
+    const overlay    = document.getElementById('searchOverlay');
+    const input      = document.getElementById('searchInput');
+    const cards      = Array.from(document.querySelectorAll('#productsGrid .product-card'));
+    const countEl    = document.getElementById('countVisible');
+    const emptyEl    = document.getElementById('emptyState');
+    const badge      = document.getElementById('activeSearchBadge');
+    const badgeTerm  = document.getElementById('activeSearchTerm');
+    const clearBtn   = document.getElementById('clearSearchBtn');
+
+    let activeTerm = '';
+
+    /* ─ Abrir overlay ─ */
+    openBtn.addEventListener('click', () => {
+        input.value = activeTerm;
+        overlay.classList.add('active');
+        setTimeout(() => { input.focus(); if (input.value) input.select(); }, 80);
+    });
+
+    /* ─ Confirmar búsqueda (Enter o botón) ─ */
+    function confirmSearch() {
+        activeTerm = input.value.trim();
+        overlay.classList.remove('active');
+        filterCards(activeTerm);
+        updateBadge();
+    }
+
+    submitBtn.addEventListener('click', confirmSearch);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); confirmSearch(); }
+    });
+
+    /* ─ Cancelar búsqueda (ESC o X) ─ */
+    closeBtn.addEventListener('click', () => {
+        input.value = activeTerm;   // restaura el término actual sin borrar
+        overlay.classList.remove('active');
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            input.value = activeTerm;
+            overlay.classList.remove('active');
+        }
+    });
+
+    /* ─ Filtro en tiempo real dentro del overlay ─ */
+    input.addEventListener('input', () => filterCards(input.value));
+
+    /* ─ Limpiar búsqueda ─ */
+    function clearSearch() {
+        activeTerm = '';
+        input.value = '';
+        filterCards('');
+        updateBadge();
+    }
+    clearBtn.addEventListener('click', clearSearch);
+
+    /* ─ Filtrar tarjetas ─ */
+    function filterCards(q) {
+        const term = q.toLowerCase().trim();
+        let n = 0;
+        cards.forEach(card => {
+            const name = (card.dataset.name || '').toLowerCase();
+            const cat  = (card.dataset.cat  || '').toLowerCase();
+            const show = !term || name.includes(term) || cat.includes(term);
+            card.classList.toggle('d-none', !show);
+            if (show) n++;
+        });
+        countEl.textContent = n;
+        emptyEl.classList.toggle('d-none', n > 0);
+    }
+
+    /* ─ Actualizar badge de búsqueda activa ─ */
+    function updateBadge() {
+        if (activeTerm) {
+            badgeTerm.textContent = activeTerm;
+            badge.classList.remove('d-none');
+        } else {
+            badge.classList.add('d-none');
+        }
+    }
+</script>
+</body>
+</html>

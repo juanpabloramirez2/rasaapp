@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:fragment="head">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <link rel="icon" href="/mantis/assets/images/favicon.svg" type="image/x-icon">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/mantis/assets/fonts/tabler-icons.min.css">
+  <link rel="stylesheet" href="/mantis/assets/fonts/feather.css">
+  <link rel="stylesheet" href="/mantis/assets/fonts/fontawesome.css">
+  <link rel="stylesheet" href="/mantis/assets/fonts/material.css">
+  <link rel="stylesheet" href="/mantis/assets/css/style.css">
+  <link rel="stylesheet" href="/mantis/assets/css/style-preset.css">
+  <style>
+    /* Reducir logo un 25% */
+    .logo-lg {
+      transform: scale(0.70);
+      transform-origin: left center;
+      display: inline-block;
+      height: auto;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<nav th:fragment="sidebar" class="pc-sidebar">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a href="/dashboard/productos" class="b-brand text-primary">
+        <img src="/mantis/assets/images/logo.svg" class="img-fluid logo-lg" alt="logo">
+      </a>
+    </div>
+    
+    <div class="navbar-content">
+      <ul class="pc-navbar">
+        <li class="pc-item pc-caption">
+          <label>Gestión</label>
+        </li>
+        <li class="pc-item">
+          <a href="/dashboard/productos" class="pc-link">
+            <span class="pc-micon"><i class="ti ti-box"></i></span>
+            <span class="pc-mtext">Productos</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="/dashboard/categorias" class="pc-link">
+            <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
+            <span class="pc-mtext">Categorías</span>
+          </a>
+        </li>
+
+        <li class="pc-item pc-logout">
+          <form th:action="@{/logout}" method="post" id="logoutForm" style="display: none;"></form>
+          
+          <a href="javascript:void(0);" 
+             class="pc-link" 
+             onclick="document.getElementById('logoutForm').submit();">
+            <span class="pc-micon"><i class="ti ti-logout"></i></span>
+            <span class="pc-mtext">Cerrar Sesión</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <style>
+    /* Hover rojo para el botón de cerrar sesión */
+    .pc-logout:hover .pc-link {
+        background: rgba(220, 53, 69, 0.1) !important; /* Fondo rojo muy suave */
+        color: #dc3545 !important; /* Texto rojo */
+    }
+    
+    .pc-logout:hover .pc-micon {
+        color: #dc3545 !important; /* Icono rojo */
+    }
+  </style>
+</nav>
+<header th:fragment="header" class="pc-header">
+  <div class="header-wrapper">
+    <div class="me-auto pc-mob-drp">
+      <ul class="list-unstyled">
+        <li class="pc-h-item pc-sidebar-collapse">
+          <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
+            <i class="ti ti-menu-2"></i>
+          </a>
+        </li>
+        <li class="pc-h-item pc-sidebar-popup">
+          <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+            <i class="ti ti-menu-2"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="ms-auto">
+      <ul class="list-unstyled">
+        <li class="dropdown pc-h-item header-user-profile">
+          <a class="pc-head-link dropdown-toggle arrow-none me-0"
+             data-bs-toggle="dropdown"
+             href="#"
+             role="button"
+             aria-expanded="false">
+            <img src="/mantis/assets/images/user/avatar-2.jpg" alt="user" class="user-avtar">
+            <span>Admin</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end pc-h-dropdown shadow-sm">
+            <a href="/catalogo" class="dropdown-item d-flex align-items-center gap-2">
+              <i class="ti ti-shopping-bag text-primary"></i>
+              Ver Catálogo
+            </a>
+            <hr class="dropdown-divider my-1">
+            <form th:action="@{/logout}" method="post" class="d-inline w-100">
+              <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger w-100">
+                <i class="ti ti-logout"></i>
+                Cerrar Sesión
+              </button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<footer th:fragment="footer" class="pc-footer">
+  <div class="footer-wrapper container-fluid">
+    <div class="row">
+      <div class="col-sm my-1">
+        <p class="m-0">Rasa Deportes &copy; 2026</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

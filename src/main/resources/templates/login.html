@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>Acceso | Rasa Deportes</title>
+    <link rel="icon" href="/mantis/assets/images/favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/mantis/assets/fonts/tabler-icons.min.css">
+    <link rel="stylesheet" href="/mantis/assets/fonts/feather.css">
+    <link rel="stylesheet" href="/mantis/assets/css/style.css">
+    <link rel="stylesheet" href="/mantis/assets/css/style-preset.css">
+</head>
+<body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
+
+<div class="auth-main">
+    <div class="auth-wrapper v3">
+        <div class="auth-form d-flex flex-column">
+
+            <!-- Cabecera -->
+            <div class="auth-header">
+                <a href="/catalogo" class="b-brand text-primary">
+                    <img src="/mantis/assets/images/logo.svg" class="img-fluid" style="height:38px;" alt="Rasa Deportes">
+                    <span class="ms-2 fw-bold" style="font-size:1rem;letter-spacing:.05em;">RASA DEPORTES</span>
+                </a>
+                <a href="/catalogo" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+                    <i class="ti ti-arrow-left"></i>
+                    <span class="d-none d-sm-inline">Catálogo</span>
+                </a>
+            </div>
+
+            <!-- Tarjeta centrada -->
+            <div class="d-flex align-items-center justify-content-center flex-grow-1 py-5">
+                <div class="card" style="width:100%;max-width:460px;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+                    <div class="card-body p-4 p-sm-5">
+
+                        <!-- Encabezado de formulario -->
+                        <div class="mb-4">
+                            <h4 class="fw-bold mb-1">Acceso al Panel</h4>
+                            <p class="text-muted mb-0" style="font-size:.9rem;">
+                                Ingresá tus credenciales para continuar
+                            </p>
+                        </div>
+
+                        <!-- Alertas -->
+                        <div th:if="${param.error}"
+                             class="alert alert-danger d-flex align-items-center gap-2 mb-4"
+                             style="font-size:.875rem;">
+                            <i class="ti ti-alert-circle fs-5"></i>
+                            Usuario o contraseña incorrectos
+                        </div>
+                        <div th:if="${param.logout}"
+                             class="alert alert-success d-flex align-items-center gap-2 mb-4"
+                             style="font-size:.875rem;">
+                            <i class="ti ti-circle-check fs-5"></i>
+                            Sesión finalizada correctamente
+                        </div>
+
+                        <!-- Formulario -->
+                        <form th:action="@{/login}" method="post" novalidate>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-semibold" style="font-size:.875rem;">
+                                    Usuario
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent">
+                                        <i class="ti ti-user text-muted"></i>
+                                    </span>
+                                    <input type="text"
+                                           id="username"
+                                           name="username"
+                                           class="form-control"
+                                           placeholder="Nombre de usuario"
+                                           required
+                                           autofocus
+                                           autocomplete="username">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold" style="font-size:.875rem;">
+                                    Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent">
+                                        <i class="ti ti-lock text-muted"></i>
+                                    </span>
+                                    <input type="password"
+                                           id="password"
+                                           name="password"
+                                           class="form-control"
+                                           placeholder="••••••••"
+                                           required
+                                           autocomplete="current-password">
+                                    <button type="button"
+                                            class="input-group-text bg-transparent"
+                                            id="togglePassword"
+                                            style="cursor:pointer;"
+                                            title="Mostrar/ocultar contraseña"
+                                            aria-label="Mostrar u ocultar contraseña">
+                                        <i class="ti ti-eye text-muted" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary fw-semibold" style="padding:.75rem;">
+                                    Ingresar al panel
+                                    <i class="ti ti-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie -->
+            <div class="auth-footer">
+                <p class="text-muted mb-0" style="font-size:.8rem;">
+                    &copy; 2026 Rasa Deportes
+                </p>
+                <p class="text-muted mb-0" style="font-size:.8rem;">
+                    Panel de Administración
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/mantis/assets/js/plugins/popper.min.js"></script>
+<script src="/mantis/assets/js/plugins/bootstrap.min.js"></script>
+<script src="/mantis/assets/js/pcoded.js"></script>
+<script>
+    layout_change('light');
+    preset_change("preset-1");
+    font_change("Public-Sans");
+</script>
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput  = document.getElementById('password');
+    const eyeIcon        = document.getElementById('eyeIcon');
+
+    togglePassword.addEventListener('click', () => {
+        const isPass = passwordInput.type === 'password';
+        passwordInput.type = isPass ? 'text' : 'password';
+        eyeIcon.className  = isPass ? 'ti ti-eye-off text-muted' : 'ti ti-eye text-muted';
+    });
+</script>
+</body>
+</html>

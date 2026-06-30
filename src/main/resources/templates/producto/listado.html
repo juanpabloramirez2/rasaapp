@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="~{layout/base :: head}">
+    <title>Panel - Productos</title>
+</head>
+
+<body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
+
+    <div class="loader-bg">
+        <div class="loader-track"><div class="loader-fill"></div></div>
+    </div>
+
+    <nav th:replace="~{layout/base :: sidebar}"></nav>
+    <header th:replace="~{layout/base :: header}"></header>
+
+    <div class="pc-container">
+        <div class="pc-content">
+
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Productos</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/dashboard/productos">Home</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Productos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Gestión de Inventario</h5>
+                            <a href="/dashboard/productos/nuevo-producto" class="btn btn-primary btn-sm d-flex align-items-center">
+                                <i class="ti ti-plus me-1"></i> Nuevo Producto
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0">
+                                            <i class="ti ti-search text-muted"></i>
+                                        </span>
+                                        <input type="text" 
+                                               id="inputBusqueda" 
+                                               class="form-control border-start-0" 
+                                               placeholder="Buscar por nombre o categoría...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-borderless mb-0" id="tablaProductos">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-3">ID</th>
+                                            <th>Producto</th>
+                                            <th>Precio</th>
+                                            <th>Categoría</th>
+                                            <th>Stock Total</th>
+                                            <th class="text-end pe-3">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="producto : ${productos}" class="fila-producto">
+                                            <td class="ps-3 text-muted" th:text="${producto.id}"></td>
+                                            <td class="nombre-producto">
+                                                <span class="fw-semibold" th:text="${producto.nombre}"></span>
+                                            </td>
+                                            <td>
+                                                <span class="text-primary fw-bold" th:text="'$' + ${#numbers.formatDecimal(producto.precio, 0, 'COMMA', 0, 'POINT')}"></span>
+                                            </td>
+                                            <td class="categoria-producto">
+                                                <span class="badge bg-light-secondary text-dark" th:text="${producto.categoria.nombre}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${stockPorProducto[producto.id]}" 
+                                                      th:class="${stockPorProducto[producto.id] == 0} ? 'text-danger' : ''">
+                                                </span>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                            type="button"
+                                                            data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="ti ti-settings me-1"></i> Gestionar
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                                                        <li>
+                                                            <a class="dropdown-item" th:href="@{/dashboard/productos/editar/{id}(id=${producto.id})}">
+                                                                <i class="ti ti-edit me-2 text-warning"></i> Editar
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" th:href="@{/dashboard/variantes/producto/{id}(id=${producto.id})}">
+                                                                <i class="ti ti-hierarchy-2 me-2" style="color: #a855f7;"></i> Variantes
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" th:href="@{/dashboard/imagenes/producto/{id}(id=${producto.id})}">
+                                                                <i class="ti ti-photo me-2 text-primary"></i> Imágenes
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger" 
+                                                               th:href="@{/dashboard/productos/eliminar/{id}(id=${producto.id})}"
+                                                               onclick="return confirm('¿Borrar producto y todas sus variantes?')">
+                                                                <i class="ti ti-trash me-2"></i> Eliminar
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr id="sinResultados" style="display: none;">
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="ti ti-package-off mb-2" style="font-size: 2.5rem;"></i>
+                                                    <p class="mb-0">No encontramos productos con ese nombre o categoría.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mt-4">
+                                <div class="text-muted small">
+                                    Mostrando <span id="mostrarProductos">0</span> de <span id="totalProductos">0</span> productos.
+                                </div>
+                                <nav aria-label="Paginación productos">
+                                    <ul class="pagination mb-0" id="paginacionProductos"></ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/base :: footer}"></footer>
+
+    <script src="/mantis/assets/js/plugins/popper.min.js"></script>
+    <script src="/mantis/assets/js/plugins/simplebar.min.js"></script>
+    <script src="/mantis/assets/js/plugins/bootstrap.min.js"></script>
+    <script src="/mantis/assets/js/fonts/custom-font.js"></script>
+    <script src="/mantis/assets/js/pcoded.js"></script>
+    <script src="/mantis/assets/js/plugins/feather.min.js"></script>
+
+    <script>
+        const inputBusqueda = document.getElementById('inputBusqueda');
+        const productoRows = Array.from(document.querySelectorAll('.fila-producto'));
+        const sinResultados = document.getElementById('sinResultados');
+        const paginacionProductos = document.getElementById('paginacionProductos');
+        const mostrarProductos = document.getElementById('mostrarProductos');
+        const totalProductos = document.getElementById('totalProductos');
+        const filasPorPagina = 7;
+        let paginaActual = 1;
+
+        function renderizarPagina(filasVisibles) {
+            const total = filasVisibles.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / filasPorPagina));
+            paginaActual = Math.min(paginaActual, totalPaginas);
+
+            paginacionProductos.innerHTML = '';
+            if (totalPaginas > 1) {
+                const crearItem = (texto, disabled, callback, active = false) => {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.textContent = texto;
+                    a.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        if (!disabled && paginaActual !== callback) {
+                            paginaActual = callback;
+                            renderizarPagina(filasVisibles);
+                        }
+                    });
+                    li.appendChild(a);
+                    return li;
+                };
+
+                paginacionProductos.appendChild(crearItem('Anterior', paginaActual === 1, paginaActual - 1));
+                for (let i = 1; i <= totalPaginas; i++) {
+                    paginacionProductos.appendChild(crearItem(i, false, i, paginaActual === i));
+                }
+                paginacionProductos.appendChild(crearItem('Siguiente', paginaActual === totalPaginas, paginaActual + 1));
+            }
+
+            productoRows.forEach(row => {
+                if (filasVisibles.includes(row)) {
+                    const posicion = filasVisibles.indexOf(row);
+                    row.style.display = (posicion >= (paginaActual - 1) * filasPorPagina && posicion < paginaActual * filasPorPagina) ? '' : 'none';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const inicio = total === 0 ? 0 : (paginaActual - 1) * filasPorPagina + 1;
+            const fin = Math.min(paginaActual * filasPorPagina, total);
+            mostrarProductos.textContent = `${inicio}-${fin}`;
+            totalProductos.textContent = total;
+        }
+
+        function aplicarFiltro() {
+            const busqueda = inputBusqueda.value.toLowerCase().trim();
+            const filasVisibles = productoRows.filter(fila => {
+                const nombre = fila.querySelector('.nombre-producto').textContent.toLowerCase();
+                const categoria = fila.querySelector('.categoria-producto').textContent.toLowerCase();
+                return busqueda === '' || nombre.includes(busqueda) || categoria.includes(busqueda);
+            });
+
+            sinResultados.style.display = (busqueda !== '' && filasVisibles.length === 0) ? '' : 'none';
+            paginaActual = 1;
+            renderizarPagina(filasVisibles);
+        }
+
+        inputBusqueda.addEventListener('input', aplicarFiltro);
+        inputBusqueda.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); aplicarFiltro(); } });
+        aplicarFiltro();
+    </script>
+
+    <script>
+        layout_change('light');
+        change_box_container('false');
+        layout_rtl_change('false');
+        preset_change("preset-1");
+        font_change("Public-Sans");
+    </script>
+
+</body>
+</html>

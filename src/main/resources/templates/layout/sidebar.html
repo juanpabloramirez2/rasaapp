@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="sidebar" class="pc-sidebar">
+    <div class="navbar-wrapper">
+        <div class="m-header">
+            <a href="/dashboard/productos" class="b-brand text-primary">
+                <span class="badge bg-brand-color-2 rounded-pill ms-2">Rasa App</span>
+            </a>
+        </div>
+        <div class="navbar-content">
+            <ul class="pc-navbar">
+                <li class="pc-item pc-caption"><label>Menú</label></li>
+                <li class="pc-item">
+                    <a href="/dashboard/productos" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-box"></i></span>
+                        <span class="pc-mtext">Productos</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="/dashboard/categorias" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-tags"></i></span>
+                        <span class="pc-mtext">Categorías</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <form th:action="@{/logout}" method="post" id="sidebarLogout" style="display:none;"></form>
+                    <a href="javascript:void(0);"
+                       class="pc-link"
+                       onclick="document.getElementById('sidebarLogout').submit();">
+                        <span class="pc-micon"><i class="ti ti-logout"></i></span>
+                        <span class="pc-mtext">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

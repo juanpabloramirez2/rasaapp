@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${producto.nombre} + ' | Rasa Deportes'"></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/public-base.css">
+    <link rel="stylesheet" href="/css/detalle.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="rasa-nav">
+    <a class="rasa-brand" href="/catalogo">RASA <span>DEPORTES</span></a>
+    <a href="/catalogo" class="nav-back">
+        <i class="bi bi-arrow-left"></i>
+        <span>Catálogo</span>
+    </a>
+</nav>
+
+<div class="page">
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb-nav" aria-label="Navegación">
+        <a href="/catalogo">Catálogo</a>
+        <span class="breadcrumb-nav__sep"><i class="bi bi-chevron-right"></i></span>
+        <a th:href="@{/catalogo(categoria=${producto.categoria.id})}"
+           th:text="${producto.categoria.nombre}"></a>
+        <span class="breadcrumb-nav__sep"><i class="bi bi-chevron-right"></i></span>
+        <span class="breadcrumb-nav__current" th:text="${producto.nombre}"></span>
+    </nav>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="product-layout">
+
+        <!-- GALERÍA -->
+        <div class="gallery">
+            <div class="gallery__main">
+                <img th:if="${producto.imagenPrincipal != null}"
+                     th:src="${producto.imagenPrincipal.url}"
+                     th:alt="${producto.nombre}"
+                     class="gallery__main-img"
+                     id="mainImg">
+                <div th:unless="${producto.imagenPrincipal != null}" class="gallery__main-empty">
+                    <i class="bi bi-image"></i>
+                </div>
+            </div>
+
+            <div class="gallery__thumbs" th:if="${not #lists.isEmpty(producto.imagenes)}">
+                <div th:each="img, iter : ${producto.imagenes}"
+                     class="gallery__thumb"
+                     th:classappend="${iter.first} ? ' active' : ''"
+                     th:attr="data-src=${img.url}"
+                     onclick="switchImg(this)"
+                     role="button"
+                     tabindex="0"
+                     th:attr="aria-label=${'Ver imagen ' + (iter.index + 1)}">
+                    <img th:src="${img.url}" th:alt="${producto.nombre}" loading="lazy">
+                </div>
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN DEL PRODUCTO -->
+        <div class="product-info">
+
+            <div class="info-cat" th:text="${producto.categoria.nombre}"></div>
+
+            <h1 class="info-name" th:text="${producto.nombre}"></h1>
+
+            <div class="info-price"
+                 th:text="'$' + ${#numbers.formatDecimal(producto.precio, 0, 'COMMA', 0, 'POINT')}"></div>
+
+            <hr class="info-hr">
+
+            <!-- Descripción -->
+            <div th:if="${producto.descripcion != null and not #strings.isEmpty(producto.descripcion)}">
+                <div class="info-block-label">Descripción</div>
+                <p class="info-desc" th:text="${producto.descripcion}"></p>
+            </div>
+
+            <!-- Colores disponibles -->
+            <div th:if="${not #lists.isEmpty(variantes)}">
+                <div class="info-block-label">Colores disponibles</div>
+                <div class="chips-row">
+                    <span th:each="v : ${variantes}"
+                          th:if="${v.color != null and not #strings.isEmpty(v.color) and v.cantidad > 0}"
+                          class="color-chip">
+                        <span class="color-chip__dot"></span>
+                        <span th:text="${v.color}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tallas disponibles -->
+            <div th:if="${not #lists.isEmpty(variantes)}">
+                <div class="info-block-label">Tallas disponibles</div>
+                <div class="chips-row">
+                    <span th:each="v : ${variantes}"
+                          th:if="${v.talla != null and not #strings.isEmpty(v.talla) and v.cantidad > 0}"
+                          class="size-chip"
+                          th:text="${v.talla}"></span>
+                </div>
+            </div>
+
+            <hr class="info-hr">
+
+            <!-- Tabla de disponibilidad -->
+            <div class="stock-card" th:if="${not #lists.isEmpty(variantes)}">
+                <div class="stock-card__head"><span>Disponibilidad por variante</span></div>
+                <div style="overflow-x:auto;">
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>Talla</th>
+                                <th style="text-align:right;">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="v : ${variantes}" th:if="${v.cantidad > 0}">
+                                <td th:text="${v.color != null and not #strings.isEmpty(v.color) ? v.color : '—'}"></td>
+                                <td th:text="${v.talla != null and not #strings.isEmpty(v.talla) ? v.talla : '—'}"></td>
+                                <td class="text-right">
+                                    <span class="stock-badge" th:text="${v.cantidad} + ' en stock'"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="stock-empty"
+                     th:if="${#lists.isEmpty(variantes)}">
+                    Sin stock disponible por el momento.
+                </div>
+            </div>
+
+            <!-- Botón volver -->
+            <a href="/catalogo" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+                Seguir explorando
+            </a>
+
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="rasa-footer">
+    <strong>Rasa Deportes</strong> &nbsp;&mdash;&nbsp; Equipamiento deportivo de calidad
+</footer>
+
+<script>
+    function switchImg(thumb) {
+        const main = document.getElementById('mainImg');
+        if (!main) return;
+        main.src = thumb.dataset.src;
+        document.querySelectorAll('.gallery__thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+    }
+
+    /* Accesibilidad: activar thumbnail con teclado */
+    document.querySelectorAll('.gallery__thumb').forEach(thumb => {
+        thumb.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                switchImg(thumb);
+            }
+        });
+    });
+</script>
+</body>
+</html>

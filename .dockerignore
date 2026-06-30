@@ -1,0 +1,10 @@
+target/
+.git/
+.gitignore
+*.md
+uploads/
+logs/
+.env
+.DS_Store
+**/.DS_Store
+src/test/

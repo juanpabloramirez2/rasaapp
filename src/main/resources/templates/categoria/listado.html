@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="~{layout/base :: head}">
+    <title>Panel - Categorías</title>
+</head>
+
+<body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
+
+    <div class="loader-bg">
+        <div class="loader-track"><div class="loader-fill"></div></div>
+    </div>
+
+    <nav th:replace="~{layout/base :: sidebar}"></nav>
+    <header th:replace="~{layout/base :: header}"></header>
+
+    <div class="pc-container">
+        <div class="pc-content">
+
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Categorías</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/dashboard/productos">Home</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Categorías</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Listado de Categorías</h5>
+                            <a href="/dashboard/categorias/nueva-categoria" class="btn btn-primary btn-sm d-flex align-items-center">
+                                <i class="ti ti-plus me-1"></i> Nueva Categoría
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0">
+                                            <i class="ti ti-search text-muted"></i>
+                                        </span>
+                                        <input type="text" 
+                                               id="inputBusqueda" 
+                                               class="form-control border-start-0" 
+                                               placeholder="Filtrar por nombre...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-borderless mb-0" id="tablaCategorias">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-3" style="width: 80px;">ID</th>
+                                            <th>Nombre de Categoría</th>
+                                            <th class="text-end pe-3">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="categoria : ${categorias}" class="fila-categoria">
+                                            <td class="ps-3 text-muted" th:text="${categoria.id}"></td>
+                                            <td class="nombre-categoria">
+                                                <span class="fw-semibold text-dark" th:text="${categoria.nombre}"></span>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <a th:href="@{/dashboard/categorias/editar/{id}(id=${categoria.id})}"
+                                                   class="btn btn-icon btn-light-primary btn-sm me-2"
+                                                   title="Editar">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
+                                                <a th:href="@{/dashboard/categorias/eliminar/{id}(id=${categoria.id})}"
+                                                   class="btn btn-icon btn-light-danger btn-sm"
+                                                   onclick="return confirm('¿Estás seguro de eliminar esta categoría?')"
+                                                   title="Eliminar">
+                                                    <i class="ti ti-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr id="filaSinResultados" style="display: none;">
+                                            <td colspan="3" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="ti ti-search-off mb-2" style="font-size: 2rem;"></i>
+                                                    <p class="mb-0">No se encontraron categorías que coincidan.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr th:if="${#lists.isEmpty(categorias)}">
+                                            <td colspan="3" class="text-center py-4 text-muted">
+                                                No hay categorías registradas aún.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mt-4">
+                                <div class="text-muted small">
+                                    Mostrando <span id="mostrarCategorias">0</span> de <span id="totalCategorias">0</span> categorías.
+                                </div>
+                                <nav aria-label="Paginación categorías">
+                                    <ul class="pagination mb-0" id="paginacionCategorias"></ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/base :: footer}"></footer>
+
+    <script src="/mantis/assets/js/plugins/popper.min.js"></script>
+    <script src="/mantis/assets/js/plugins/simplebar.min.js"></script>
+    <script src="/mantis/assets/js/plugins/bootstrap.min.js"></script>
+    <script src="/mantis/assets/js/fonts/custom-font.js"></script>
+    <script src="/mantis/assets/js/pcoded.js"></script>
+    <script src="/mantis/assets/js/plugins/feather.min.js"></script>
+
+    <script>
+        const inputBusqueda = document.getElementById('inputBusqueda');
+        const categoriaRows = Array.from(document.querySelectorAll('.fila-categoria'));
+        const filaSinResultados = document.getElementById('filaSinResultados');
+        const paginacionCategorias = document.getElementById('paginacionCategorias');
+        const mostrarCategorias = document.getElementById('mostrarCategorias');
+        const totalCategorias = document.getElementById('totalCategorias');
+        const filasPorPagina = 7;
+        let paginaActual = 1;
+
+        function renderizarPagina(filasVisibles) {
+            const total = filasVisibles.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / filasPorPagina));
+            paginaActual = Math.min(paginaActual, totalPaginas);
+
+            paginacionCategorias.innerHTML = '';
+            if (totalPaginas > 1) {
+                const crearItem = (texto, disabled, callback, active = false) => {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.textContent = texto;
+                    a.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        if (!disabled && paginaActual !== callback) {
+                            paginaActual = callback;
+                            renderizarPagina(filasVisibles);
+                        }
+                    });
+                    li.appendChild(a);
+                    return li;
+                };
+
+                paginacionCategorias.appendChild(crearItem('Anterior', paginaActual === 1, paginaActual - 1));
+                for (let i = 1; i <= totalPaginas; i++) {
+                    paginacionCategorias.appendChild(crearItem(i, false, i, paginaActual === i));
+                }
+                paginacionCategorias.appendChild(crearItem('Siguiente', paginaActual === totalPaginas, paginaActual + 1));
+            }
+
+            categoriaRows.forEach((fila, index) => {
+                if (filasVisibles.includes(fila)) {
+                    const posicion = filasVisibles.indexOf(fila);
+                    fila.style.display = (posicion >= (paginaActual - 1) * filasPorPagina && posicion < paginaActual * filasPorPagina) ? '' : 'none';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+
+            const inicio = total === 0 ? 0 : (paginaActual - 1) * filasPorPagina + 1;
+            const fin = Math.min(paginaActual * filasPorPagina, total);
+            mostrarCategorias.textContent = `${inicio}-${fin}`;
+            totalCategorias.textContent = total;
+        }
+
+        function aplicarFiltro() {
+            const valor = inputBusqueda.value.toLowerCase().trim();
+            const filasVisibles = categoriaRows.filter(fila => {
+                const texto = fila.querySelector('.nombre-categoria').textContent.toLowerCase();
+                return valor === '' || texto.includes(valor);
+            });
+
+            filaSinResultados.style.display = (valor !== '' && filasVisibles.length === 0) ? '' : 'none';
+            paginaActual = 1;
+            renderizarPagina(filasVisibles);
+        }
+
+        inputBusqueda.addEventListener('input', aplicarFiltro);
+        inputBusqueda.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); aplicarFiltro(); } });
+        aplicarFiltro();
+    </script>
+
+    <script>
+        layout_change('light');
+        change_box_container('false');
+        layout_rtl_change('false');
+        preset_change("preset-1");
+        font_change("Public-Sans");
+    </script>
+
+</body>
+</html>
