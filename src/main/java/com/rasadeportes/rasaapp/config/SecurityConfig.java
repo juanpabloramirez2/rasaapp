@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 "/productos-publicos/**"
                         ).permitAll()
 
-                        // recursos estáticos y health check
+                        // recursos estáticos, health check y página de error
                         .requestMatchers(
                                 "/css/**",
                                 "/js/**",
@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/mantis/**",
                                 "/actuator/health",
-                                "/actuator/health/**"
+                                "/actuator/health/**",
+                                "/error"
                         ).permitAll()
 
                         // dashboard protegido
