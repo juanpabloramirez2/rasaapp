@@ -4,6 +4,7 @@ import com.rasadeportes.rasaapp.model.Producto;
 import com.rasadeportes.rasaapp.repository.ProductoRepository;
 import com.rasadeportes.rasaapp.repository.VarianteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class ProductoService {
 
 
     //Para el catálogo
+    @Transactional(readOnly = true)
     public List<Producto> obtenerTodosDisponibles() {
         return productoRepository.findAll().stream()
                 .filter(p -> p.getImagenes() != null && !p.getImagenes().isEmpty()) // Que tenga fotos
@@ -49,6 +51,7 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Producto> obtenerDisponiblesPorCategoria(Long categoriaId) {
         return obtenerTodosDisponibles().stream()
                 .filter(p -> p.getCategoria().getId().equals(categoriaId))
