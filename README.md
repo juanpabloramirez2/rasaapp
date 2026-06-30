@@ -122,7 +122,7 @@ docker compose version   # Docker Compose version v2.x+
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/rasaapp.git
+git clone https://github.com/juanpabloramirez2/rasaapp.git
 cd rasaapp
 ```
 
@@ -319,7 +319,7 @@ nslookup rasadeportes.com
 ```bash
 # Primero sube el código a GitHub/GitLab, luego en el servidor:
 ssh root@IP_DEL_VPS
-git clone https://github.com/tu-usuario/rasaapp.git /tmp/rasaapp
+git clone https://github.com/juanpabloramirez2/rasaapp.git /tmp/rasaapp
 cd /tmp/rasaapp
 ```
 
