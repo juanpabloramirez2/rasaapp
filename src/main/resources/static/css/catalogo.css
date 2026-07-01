@@ -141,7 +141,6 @@
 }
 @media (max-width: 1280px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 860px)  { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.55rem; } }
-@media (max-width: 420px)  { .products-grid { grid-template-columns: 1fr; } }
 
 /* ── PRODUCT CARD ── */
 .product-card {

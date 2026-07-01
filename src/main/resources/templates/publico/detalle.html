@@ -82,26 +82,23 @@
             </div>
 
             <!-- Colores disponibles -->
-            <div th:if="${not #lists.isEmpty(variantes)}">
+            <div th:if="${not #lists.isEmpty(coloresDisponibles)}">
                 <div class="info-block-label">Colores disponibles</div>
                 <div class="chips-row">
-                    <span th:each="v : ${variantes}"
-                          th:if="${v.color != null and not #strings.isEmpty(v.color) and v.cantidad > 0}"
-                          class="color-chip">
+                    <span th:each="c : ${coloresDisponibles}" class="color-chip">
                         <span class="color-chip__dot"></span>
-                        <span th:text="${v.color}"></span>
+                        <span th:text="${c}"></span>
                     </span>
                 </div>
             </div>
 
             <!-- Tallas disponibles -->
-            <div th:if="${not #lists.isEmpty(variantes)}">
+            <div th:if="${not #lists.isEmpty(tallasDisponibles)}">
                 <div class="info-block-label">Tallas disponibles</div>
                 <div class="chips-row">
-                    <span th:each="v : ${variantes}"
-                          th:if="${v.talla != null and not #strings.isEmpty(v.talla) and v.cantidad > 0}"
+                    <span th:each="t : ${tallasDisponibles}"
                           class="size-chip"
-                          th:text="${v.talla}"></span>
+                          th:text="${t}"></span>
                 </div>
             </div>
 
