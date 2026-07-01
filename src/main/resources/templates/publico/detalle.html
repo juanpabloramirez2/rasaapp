@@ -54,11 +54,10 @@
                 <div th:each="img, iter : ${producto.imagenes}"
                      class="gallery__thumb"
                      th:classappend="${iter.first} ? ' active' : ''"
-                     th:attr="data-src=${img.url}"
+                     th:attr="data-src=${img.url},aria-label=${'Ver imagen ' + (iter.index + 1)}"
                      onclick="switchImg(this)"
                      role="button"
-                     tabindex="0"
-                     th:attr="aria-label=${'Ver imagen ' + (iter.index + 1)}">
+                     tabindex="0">
                     <img th:src="${img.url}" th:alt="${producto.nombre}" loading="lazy">
                 </div>
             </div>
